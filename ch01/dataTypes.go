@@ -12,6 +12,7 @@ package main
 
 import (
   "fmt"
+  "reflect"
 )
 var (
   firstName string
@@ -45,6 +46,16 @@ func main() {
   for j := 0; j < len(randString); j++ {
     fmt.Println(randString[j])
   }
+  // check type of Data
+  fmt.Println("firstName is of type", reflect.TypeOf(firstName))
+  fmt.Println("middleName is of type", reflect.TypeOf(middleName))
+  fmt.Println("lastName is of type", reflect.TypeOf(lastName))
+  fmt.Println("age is of type", reflect.TypeOf(age))
+  fmt.Println("height is of type", reflect.TypeOf(height))
+  fmt.Println("ownHome is of type", reflect.TypeOf(ownHome))
+  fmt.Println("randNumber is of type", reflect.TypeOf(randNumber))
+  fmt.Println("randString is of type", reflect.TypeOf(randString))
+
 }
 
 /*
@@ -92,6 +103,10 @@ identified by the code points 0–127. It covers English letters, Latin numbers,
 
 Whenever a rune is assined then its asosciated ASCII value will be stored to that variable. To convert this value to actual value then string() method can be used
 which will convert it to string value.
+
+Type Checking:
+To find out the type of data we used in this program. Function called TypeOf is being used which finds the data type. But if you observe it closely. This
+function is being called from a package named reflect. If this package is not imported then compiler will panic and throw an error.
 
 This is enough information on data types as of now. Loops can not be explained since it will be explained in other section.
 */
