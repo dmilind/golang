@@ -47,6 +47,4 @@ func main(){
   for p, gp := range madridTeam {
     fmt.Printf("%s => %s\n", p, gp)
   }
-
-
 }
