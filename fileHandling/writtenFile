@@ -1,0 +1,3 @@
+This is a file which is written using a writer function in golang
+This data is being passed to the function where slice of byte will
+be generated and that slice is being passed to be written.

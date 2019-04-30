@@ -1,0 +1,4 @@
+/*
+Go command line tool
+
+*/
