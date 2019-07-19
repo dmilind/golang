@@ -139,8 +139,36 @@ func EnableGoogleAuth() {
 	fmt.Println("Editing a file --> /etc/ssh/sshd_config")
 	FileEdit("/etc/ssh/sshd_config", "ChallengeResponseAuthentication no", "#ChallengeResponseAuthentication no")
 
+  LineInSSH := "ClientAliveInterval 120\n"
+  file, err = os.OpenFile("/etc/ssh/sshd_config", os.O_APPEND|os.O_WRONLY, 0644)
+  if err != nil {
+    fmt.Println("Error while opening a file --> /etc/ssh/sshd_config")
+    os.Exit(1)
+  }
+
+  defer file.Close()
+  _, err = file.WriteString(LineInSSH)
+  if err != nil {
+    fmt.Println("Error while writing a file --> /etc/ssh/sshd_config")
+    os.Exit(1)
+  }
+
+  LineInSSH = "ClientAliveCountMax 2\n"
+  file, err = os.OpenFile("/etc/ssh/sshd_config", os.O_APPEND|os.O_WRONLY, 0644)
+  if err != nil {
+    fmt.Println("Error while opening a file --> /etc/ssh/sshd_config")
+    os.Exit(1)
+  }
+
+  defer file.Close()
+  _, err = file.WriteString(LineInSSH)
+  if err != nil {
+    fmt.Println("Error while writing a file --> /etc/ssh/sshd_config")
+    os.Exit(1)
+  }
+
 	fmt.Println("Adding a line in a file --> /etc/ssh/sshd_config")
-	LineInSSH := "AuthenticationMethods publickey,password publickey,keyboard-interactive"
+	LineInSSH = "AuthenticationMethods publickey,password publickey,keyboard-interactive\n"
 	file, err = os.OpenFile("/etc/ssh/sshd_config", os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
 		fmt.Println("Error while opening a file --> /etc/ssh/sshd_config")
