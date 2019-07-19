@@ -1,0 +1,8 @@
+# Ansible playbook: Using custom ansible module written in golang
+---
+- hosts: vagrant
+  gather_facts: true
+  become: true
+  roles:
+    - common
+    - gopher

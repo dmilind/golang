@@ -1,0 +1,26 @@
+# Playbook to configure prerequisites
+---
+  - name: Installing Epel Release
+    yum:
+      name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+      state: present
+
+  - name: Installing Google Authenticator
+    yum:
+      name: google-authenticator
+      state: latest
+
+  - name: Backing up sshd configurations
+    shell: |
+      cp /etc/ssh/sshd_config /home/vagrant
+      cp /etc/pam.d/sshd /home/vagrant
+      exit 0
+
+  - name: Adding User
+    user:
+      name: google
+      shell: /bin/bash
+      create_home: yes
+      generate_ssh_key: yes
+      password: google
+      state: present
