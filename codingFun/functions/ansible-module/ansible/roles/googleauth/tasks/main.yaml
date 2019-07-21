@@ -1,0 +1,22 @@
+# Playbook repsonsible to set up google's two factor auth on machine
+---
+  - name: Adding binary
+    copy:
+      src: library/googleAuth
+      dest: /home/vagrant/
+
+  - name: Configuring Google's Two Factor Authentication
+    googleAuth:
+      state: enable
+
+  - name: Placing authenticator for users
+    shell: |
+      cp /root/.google_authenticator /home/"{{ item }}"/
+    with_items:
+      - vagrant
+
+  - name: Fetch googleauthenticator file locally
+    fetch:
+      src: /root/.google_authenticator
+      dest: /tmp/
+      flat: yes

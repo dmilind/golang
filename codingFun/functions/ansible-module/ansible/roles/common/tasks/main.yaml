@@ -10,11 +10,12 @@
       name: google-authenticator
       state: latest
 
-  - name: Backing up sshd configurations
-    shell: |
-      cp /etc/ssh/sshd_config /home/vagrant
-      cp /etc/pam.d/sshd /home/vagrant
-      exit 0
+  - name: No pass for newly created user
+    lineinfile:
+      dest: /etc/sudoers
+      state: present
+      regexp: '^%wheel'
+      line: '%wheel ALL=(ALL) NOPASSWD: ALL'
 
   - name: Adding User
     user:
@@ -22,5 +23,11 @@
       shell: /bin/bash
       create_home: yes
       generate_ssh_key: yes
-      password: google
       state: present
+      groups: wheel
+
+  - name: Adding vagrant user's authorization key to google user
+    shell: |
+      cp /home/vagrant/.ssh/authorized_keys /home/google/.ssh
+      chown google:google /home/google/.ssh/authorized_keys
+      exit 0
