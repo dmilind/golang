@@ -1,6 +1,6 @@
 /*
-sshdConfigSyncer to keep sshd_config file updated always. This program parses all files provided under /etc/ssh/allowed_groups, collects all group, and all those groups will be added
-AllowGroups in sshd_config file. Also no duplicate value will be kept in sshd_config file.
+sshdGenerator to keep sshd_config file updated always. This program parses all files provided under /etc/ssh/allowed_groups, collects all group, and all those groups will be added
+AllowGroups in sshd_config file. Also this will make sure not to add duplicate value in sshd_config.
 */
 
 package main
@@ -17,8 +17,7 @@ import (
 )
 
 var (
-	destDir = "/etc/ssh/allowed_groups/"
-	//destDir           = "/Users/mdhoke/Documents/kachara/ansible/allowed_groups/" // remove this line later
+	destDir           = "/etc/ssh/allowed_groups/"
 	serviceFiles      []string
 	allowedGroups     []string
 	groups            []string
@@ -27,7 +26,6 @@ var (
 
 const (
 	sshdFile = "/etc/ssh/sshd_config"
-	//sshdFile = "/Users/mdhoke/Documents/kachara/ansible/sshd_config" // change the value of this param later
 )
 
 // isInSlice function to remove all duplicate sshd groups from provided allowed groups slice
@@ -85,39 +83,48 @@ func UpdateConf(allowedGroups []string) {
 }
 
 func main() {
-	_, err := os.Stat(destDir)
-	if err != nil {
-		fmt.Println("Directory missing", destDir)
+	args := os.Args
+	if len(args) != 2 {
+		fmt.Println("Pass flag 'update' for updating sshd_config")
 		os.Exit(1)
 	}
-	allFiles, err := ioutil.ReadDir(destDir)
-	if err != nil {
-		fmt.Println("Failed to read the directory")
-	}
-	for _, f := range allFiles {
-		serviceFiles = append(serviceFiles, f.Name())
-	}
-	if len(serviceFiles) == 0 {
-		fmt.Println("No service's allowed group file found, keeping default sshd groups!")
-		os.Exit(0)
-	}
-
-	fmt.Println("Available service's allowed_groups files are -->", serviceFiles)
-	for _, file := range serviceFiles {
-		allowedGroups = Groups(destDir + file)
-	}
-	uniqueAllowGroups := make([]string, 0)
-	for _, val := range allowedGroups {
-		if !isInSlice(val, uniqueAllowGroups) {
-			uniqueAllowGroups = append(uniqueAllowGroups, val)
+	if args[1] == "update" {
+		_, err := os.Stat(destDir)
+		if err != nil {
+			fmt.Println("Directory missing -->", destDir)
+			os.Exit(1)
 		}
-	}
+		allFiles, err := ioutil.ReadDir(destDir)
+		if err != nil {
+			fmt.Println("Failed to read the directory -->", destDir)
+		}
+		for _, f := range allFiles {
+			serviceFiles = append(serviceFiles, f.Name())
+		}
+		if len(serviceFiles) == 0 {
+			fmt.Println("Updating sshd_config with all default values!")
+			os.Exit(0)
+		}
 
-	fmt.Println("Required sshd groups to be injected:-->", uniqueAllowGroups)
-	UpdateConf(uniqueAllowGroups)
-	_, err = exec.Command("systemctl", "restart", "sshd").Output()
-	if err != nil {
-		fmt.Println("Error while starting sshd daemon")
-		os.Exit(1)
+		fmt.Println("Available files coming from services are -->", serviceFiles)
+		for _, file := range serviceFiles {
+			allowedGroups = Groups(destDir + file)
+		}
+		uniqueAllowGroups := make([]string, 0)
+		for _, val := range allowedGroups {
+			if !isInSlice(val, uniqueAllowGroups) {
+				uniqueAllowGroups = append(uniqueAllowGroups, val)
+			}
+		}
+		fmt.Println("Required sshd groups to be injected in sshd_config -->", uniqueAllowGroups)
+		UpdateConf(uniqueAllowGroups)
+		_, err = exec.Command("systemctl", "restart", "sshd").Output()
+		if err != nil {
+			fmt.Println("Error while starting sshd daemon")
+			os.Exit(1)
+		}
+		fmt.Println("Updated sshd_config and restarted sshd service successfully!")
+	} else {
+		fmt.Println("Expecting 'update' flag to update sshd_config")
 	}
 }
