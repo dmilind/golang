@@ -61,9 +61,4 @@ func main() {
 	}
 	// fmt.Println(emails) // prints a slice of all email addresses
 	findDuplicateValues(emails)
-	// read a file line by line
-	// first first string strarting from second blank line to third blank line
-	// collect all email into a slice
-	// display collected email id and numbers
-	// pass this slice to function findDuplicateValues
 }
